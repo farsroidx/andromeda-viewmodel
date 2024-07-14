@@ -1,4 +1,3 @@
-# Keep StringConcatFactory class
 -dontwarn java.lang.invoke.StringConcatFactory
 
 # Keep all classes and interfaces in ir.farsroidx.m31 package
