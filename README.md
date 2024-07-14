@@ -51,4 +51,22 @@ dependencies {
 }
 ```
 
+#### 3. Adding the following rules to use R8 and proguard in `proguard-rules.pro`:
+
+```pro
+# Keep StringConcatFactory class
+-keep class java.lang.invoke.StringConcatFactory { *; }
+
+# Keep all classes and interfaces in ir.farsroidx.m31 package
+-keep class ir.farsroidx.m31.** { *; }
+
+# Keep all fields and methods in ir.farsroidx.m31 package
+-keepclassmembers class ir.farsroidx.m31.** { *; }
+
+# Keep all extension functions in ir.farsroidx.m31 package
+-keepclassmembers class ir.farsroidx.m31.** {
+    public <methods>;
+}
+```
+
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://github.com/farsroidx)
