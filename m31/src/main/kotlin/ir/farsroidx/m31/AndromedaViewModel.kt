@@ -14,9 +14,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * Use AndromedaViewModelViewState instead of AndromedaViewModel to better manage UI state.
+ * Use AndromedaViewStateViewModel instead of AndromedaViewModel to better manage UI state.
  * ```
- * class YourViewModel : AndromedaViewModelViewState<YourState>()
+ * class YourViewModel : AndromedaViewStateViewModel<YourStateType>()
  * ```
  */
 abstract class AndromedaViewModel : ViewModel() {
@@ -32,6 +32,22 @@ abstract class AndromedaViewModel : ViewModel() {
         onJobException(throwable)
     }
 
+    protected fun doInDefaultScope(
+        callback: suspend CoroutineScope.() -> Unit
+    ) = viewModelScope(Dispatchers.Default, callback)
+
+    protected fun doInIOScope(
+        callback: suspend CoroutineScope.() -> Unit
+    ) = viewModelScope(Dispatchers.IO, callback)
+
+    protected fun doInMainScope(
+        callback: suspend CoroutineScope.() -> Unit
+    ) = viewModelScope(Dispatchers.Main, callback)
+
+    protected fun doInUnconfinedScope(
+        callback: suspend CoroutineScope.() -> Unit
+    ) = viewModelScope(Dispatchers.Unconfined, callback)
+
     protected fun viewModelScope(
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         callback: suspend CoroutineScope.() -> Unit
@@ -46,16 +62,16 @@ abstract class AndromedaViewModel : ViewModel() {
 
                 _jobs.remove(job)
 
-                Log.d(TAG, "Job cancelled")
+                Log.d(TAG, "Job Cancelled.")
 
             } else if (throwable != null) {
 
                 onJobException(throwable)
 
-                Log.e(TAG, "Job failed: $throwable")
+                Log.e(TAG, "Job Failed: ${throwable.message}.")
 
             } else {
-                Log.d(TAG, "Job completed successfully")
+                Log.d(TAG, "Job completed Successfully!")
             }
         }
 

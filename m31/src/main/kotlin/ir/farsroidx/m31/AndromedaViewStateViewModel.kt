@@ -10,6 +10,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 abstract class AndromedaViewStateViewModel <S: Any> : AndromedaViewModel() {
@@ -21,42 +25,56 @@ abstract class AndromedaViewStateViewModel <S: Any> : AndromedaViewModel() {
     private val _liveViewStateChange = MutableLiveData<S>()
     val liveViewStateChange: LiveData<S> = _liveViewStateChange
 
-    private val _composeViewStateChange: MutableState<S?> = mutableStateOf(null)
-    val composeViewStateChange: State<S?> = _composeViewStateChange
+    private val _viewStateChange: MutableState<S?> = mutableStateOf(null)
+    val viewStateChange: State<S?> = _viewStateChange
+
+    private val _viewStateChangeFlow: MutableStateFlow<S?> = MutableStateFlow(null)
+    val viewStateChangeFlow: StateFlow<S?> = _viewStateChangeFlow.asStateFlow()
 
     fun bindLifecycleOwner(lifecycleOwner: LifecycleOwner) {
         this._lifecycleOwner = lifecycleOwner
     }
 
-    fun bindLifecycleOwner(
-        lifecycleOwner: LifecycleOwner, onStateChange: (S) -> Unit
+    fun bindStateChangeCallback(
+        lifecycleOwner: LifecycleOwner, onStateChangeCallback: (S) -> Unit
     ) {
         this._lifecycleOwner    = lifecycleOwner
-        this._onViewStateChange = onStateChange
+        this._onViewStateChange = onStateChangeCallback
     }
 
     protected fun updateViewState(viewState: S, asPostValue: Boolean = false) {
 
         if (asPostValue) {
             this._liveViewStateChange.postValue(viewState)
-        } else {
-            this._liveViewStateChange.value = viewState
         }
 
-        this._composeViewStateChange.value = viewState
+        viewModelScope(Dispatchers.Main) {
 
-        this._lifecycleOwner?.let { lifecycleOwner ->
+            if (!asPostValue) {
+                _liveViewStateChange.value = viewState
+            }
 
-            lifecycleOwner.lifecycleScope.launch {
+            _viewStateChange.value     = viewState
+            _viewStateChangeFlow.value = viewState
 
-                if (lifecycleOwner.lifecycle.currentState != Lifecycle.State.DESTROYED) {
+            _lifecycleOwner?.let { lifecycleOwner ->
 
-                    _onViewStateChange(viewState)
+                lifecycleOwner.lifecycleScope.launch {
 
-                } else {
-                    // TODO: Handle the state change if needed
+                    if (lifecycleOwner.lifecycle.currentState != Lifecycle.State.DESTROYED) {
+
+                        _onViewStateChange(viewState)
+
+                    } else {
+                        // TODO: Handle the state change if needed
+                    }
                 }
             }
         }
+    }
+
+    fun resetViewState() = viewModelScope(Dispatchers.Main) {
+        _viewStateChange.value     = null
+        _viewStateChangeFlow.value = null
     }
 }
