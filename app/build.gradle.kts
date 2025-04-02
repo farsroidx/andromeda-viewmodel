@@ -8,12 +8,12 @@ plugins {
 android {
 
     namespace  = "ir.farsroidx.andromeda"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId             = "ir.farsroidx.andromeda.viewmodel"
         minSdk                    = 21
-        targetSdk                 = 34
+        targetSdk                 = 35
         versionCode               = 1
         versionName               = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -40,7 +40,6 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation( project(":m31") )
 
-    implementation(project(":m31"))
 }

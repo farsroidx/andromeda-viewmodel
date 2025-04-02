@@ -10,7 +10,7 @@ plugins {
 android {
 
     namespace  = "ir.farsroidx.m31"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         multiDexEnabled           = true
@@ -35,6 +35,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = false
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -47,12 +51,18 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-ktx:1.15.0")
 
     // Lifecycle
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
+    // Andromeda
+    implementation("com.github.farsroidx:andromeda-extensions:2.1.0")
+
+    // Jetbrains
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.0")
 
 }
 
@@ -64,7 +74,7 @@ publishing {
 
             groupId    = "ir.farsroidx.m31"
             artifactId = "andromeda-viewmodel"
-            version    = "1.1.0"
+            version    = "2.0.0"
 
             afterEvaluate {
 
